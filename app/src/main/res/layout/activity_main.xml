@@ -1,0 +1,656 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
+    android:id="@+id/table"
+    android:orientation="vertical"
+    android:background="@android:color/holo_blue_light">
+
+    <TableLayout  android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/table1">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="GPSStatus"
+                android:id="@+id/tv_gpsstatus"
+                
+                android:layout_column="0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="---"
+                android:id="@+id/tv_gpsstatus_in"
+                
+                android:layout_column="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text=""
+                android:id="@+id/tv_sats"
+                
+                android:layout_column="2" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="#Sat"
+                android:id="@+id/tv_sats_in"
+                android:layout_column="3"
+                android:gravity="right"
+                android:layout_weight="1" />
+
+        </TableRow>
+
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="4dp"
+            android:background="#c0c0c0"/>
+
+    </TableLayout>
+
+    <TableLayout  android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/table2">
+
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/iv_speed"
+                android:layout_column="0"
+                android:paddingLeft="4dp"
+                android:src="@drawable/speed"
+                android:contentDescription="Speed"
+                android:paddingRight="4dp"
+                android:layout_weight="1" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="00.00"
+                android:id="@+id/tv_speed_in"
+                android:layout_column="1"
+                android:layout_gravity="right" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="km/h"
+                android:id="@+id/tv_kmh"
+                android:padding="0dp"
+                android:layout_column="2"
+                android:layout_gravity="center_vertical" />
+
+
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/iv_duration"
+                android:layout_column="3"
+                android:src="@drawable/clock"
+                android:contentDescription="Duration"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="4dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="00:00:00"
+                android:id="@+id/tv_runtime_in"
+                
+                android:layout_column="4"
+                android:layout_span="2"
+                android:layout_gravity="center_vertical|right" />
+
+
+
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|right">
+
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/iv_distance"
+                android:layout_column="0"
+                android:src="@drawable/distance"
+                android:contentDescription="Distance"
+                android:paddingRight="4dp"
+                android:layout_weight="1" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="0.00"
+                android:id="@+id/tv_distance_in"
+                
+                android:layout_column="1"
+                android:layout_gravity="right" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="km"
+                android:id="@+id/tv_km"
+                android:padding="0dp"
+                android:layout_column="2"
+                android:layout_gravity="center_vertical" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/iv_starttime"
+                android:layout_column="3"
+                android:src="@drawable/start"
+                android:contentDescription="StartTime"
+                android:paddingRight="4dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="00:00:00"
+                android:id="@+id/tv_startttime_in"
+                android:layout_span="1"
+                android:layout_column="4"
+                android:layout_gravity="right" />
+
+
+
+
+
+
+        </TableRow>
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/iv_heartRate"
+                android:layout_column="0"
+                android:src="@drawable/heart"
+                android:contentDescription="Heartrate"
+                android:paddingRight="4dp"
+                android:paddingLeft="4dp"
+                android:layout_weight="1" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="000"
+                android:id="@+id/tv_heartrate_in"
+
+                android:layout_column="1"
+                android:layout_gravity="center_vertical|right"
+                android:layout_weight="0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="bpm"
+                android:id="@+id/tv_bpm"
+                android:layout_column="2"
+                android:layout_gravity="center_vertical" />
+
+
+
+
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/iv_systime"
+                android:layout_column="3"
+                android:paddingLeft="4dp"
+                android:src="@drawable/clock_now"
+                android:contentDescription="Current time"
+                android:paddingRight="4dp"
+                android:layout_weight="1" />
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="00:00:00"
+                android:id="@+id/tv_systime_in"
+                android:layout_span="2"
+                android:layout_column="4" />
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/iv_cal"
+            android:layout_column="0"
+
+            android:src="@drawable/calories"
+            android:contentDescription="Calories"
+            android:paddingRight="4dp"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="00"
+            android:id="@+id/tv_cal_in"
+            android:layout_column="1"
+            android:layout_gravity="right" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="kCal"
+                android:id="@+id/tv_kcal"
+                android:padding="0dp"
+                android:layout_column="2"
+                android:layout_gravity="center_vertical" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/iv_dummy3"
+                android:layout_column="3"
+                android:paddingLeft="4dp"
+                android:src="@drawable/clock"
+                android:contentDescription=""
+                android:paddingRight="4dp"
+                android:layout_weight="1" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text=""
+                android:id="@+id/tv_dummy1_in"
+                android:layout_column="4"
+                android:layout_gravity="right" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text=""
+                android:id="@+id/tv_dummy2"
+                android:padding="0dp"
+                android:layout_column="5"
+                android:layout_gravity="center_vertical" />
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Avg"
+                android:id="@+id/tv_avgspeed"
+                
+                android:layout_column="0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="0000000"
+                android:id="@+id/tv_avgspeed_in"                />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Max"
+                android:id="@+id/tv_maxspeed"
+                android:layout_column="3" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="000"
+                android:id="@+id/tv_maxspeed_in"
+                android:layout_column="4" />
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout  android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/table3">
+
+
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="4dp"
+            android:background="#c0c0c0"/>
+
+
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btn_start"
+                
+                android:text="Start"
+                android:layout_column="0"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text=""
+                android:id="@+id/tv_000"
+                
+                android:layout_column="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="AppState"
+                android:id="@+id/tv_app_state"
+                
+                android:layout_column="2" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="-"
+                android:id="@+id/tv_app_state_in"
+                
+                android:layout_column="3" />
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout  android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/table4">
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="4dp"
+            android:background="#c0c0c0"/>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Longitude"
+                android:id="@+id/tv_lon"
+                
+                android:layout_column="0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="000"
+                android:id="@+id/tv_lon_in"
+                
+                android:layout_span="3"
+                android:layout_column="1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Latitude"
+                android:id="@+id/tv_lat"
+                
+                android:layout_column="0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="000"
+                android:id="@+id/tv_lat_in"
+                
+                android:layout_span="3"
+                android:layout_column="1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Accuracy"
+                android:id="@+id/tv_accuracy"
+                
+                android:layout_column="0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="000"
+                android:id="@+id/tv_accuracy_in"
+                
+                android:layout_column="1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Altitude"
+                android:id="@+id/tv_altitude"
+                
+                android:layout_column="0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="000"
+                android:id="@+id/tv_altitude_in"
+                
+                android:layout_column="1" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="GPSTime"
+                android:id="@+id/tv_time"
+                
+                android:layout_column="0" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="000"
+                android:id="@+id/tv_time_in"
+                
+                android:layout_span="3"
+                android:layout_column="1" />
+
+        </TableRow>
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Date"
+                android:id="@+id/tv_date"
+                
+                android:layout_column="0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="000"
+                android:id="@+id/tv_date_in"
+                
+                android:layout_column="1" />
+        </TableRow>
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Bearing"
+                android:id="@+id/tv_bearing"
+                
+                android:layout_column="0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="000"
+                android:id="@+id/tv_bearing_in"
+                
+                android:layout_span="3"
+                android:layout_column="1" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="CorrDist"
+                android:id="@+id/textView"
+                
+                android:layout_column="0" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="000"
+                android:id="@+id/tv_corrD_in"
+                
+                android:layout_column="1" />
+
+
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Provider"
+                android:id="@+id/tv_provider"
+                
+                android:layout_column="0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="000"
+                android:id="@+id/tv_provider_in"
+                
+                android:layout_span="3"
+                android:layout_column="1" />
+        </TableRow>
+
+
+
+    </TableLayout>
+
+</LinearLayout>
