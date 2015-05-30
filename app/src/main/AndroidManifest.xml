@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.rolandstrausz.roland.gps5" >
+    package="com.rolandstrausz.roland.gps5"
+    android:versionCode="0"
+    android:versionName="0.1">
+
+    <uses-sdk
+        android:minSdkVersion="12"
+        android:targetSdkVersion="21"/>
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -20,12 +26,14 @@
         </activity>
         <activity
             android:name=".MainActivity2Activity"
-            android:label="@string/title_activity_main_activity2" >
+            android:label="@string/title_activity_main_activity2"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".BigScreenActivity"
             android:label="@string/title_activity_big_screen"
-            android:screenOrientation="portrait" >
+            android:configChanges="orientation|screenSize"
+             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

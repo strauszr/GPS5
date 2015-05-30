@@ -1,19 +1,27 @@
 package com.rolandstrausz.roland.gps5;
 
+import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 
 public class MainActivity2Activity extends ActionBarActivity {
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_activity2);
-    }
+        setContentView(R.layout.fragment_main_activity2);
 
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

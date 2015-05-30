@@ -18,6 +18,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.location.GpsSatellite;
 import android.location.GpsStatus;
 import android.location.GpsStatus.Listener;
@@ -32,6 +33,7 @@ import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -66,7 +68,7 @@ public class BigScreenActivity extends ActionBarActivity {
     private int durationMillis = 0;
     private int durationNoSpeedMillis = 0;
     private float correctDistance;
-    private boolean gpsEnabled;
+    private boolean gpsEnabled,lastLocationValid;
     private boolean gpsFix = false;
     private double nowLat, nowLon, nowAltitude, avgSpeed, maxSpeed,nowSpeed;
     private float gpsAccuracy = 0;
@@ -89,7 +91,7 @@ public class BigScreenActivity extends ActionBarActivity {
     private SimpleDateFormat gpxtime_fm = new SimpleDateFormat("HH:mm:ss");
 
     private BandClient client = null;
-    private int nowHeartRate,maxHeartRate;
+    private int nowHeartRate,maxHeartRate,minHeartRate;
     private long beginCalories = -1;
     private long nowCalories;
     private rgsDisplayItem dItemCalories = new rgsDisplayItem("Calories", "0", "kCal", R.drawable.calories);
@@ -141,6 +143,7 @@ public class BigScreenActivity extends ActionBarActivity {
     private int setting_tcx_log = 1; //1="log in tcx"; 0="do not log in tcx"
     private int setting_log =1; // 1=log 0=no log overrides gpx/setting_tcx_log
     private int setting_refresh_logtime= 5000; //Refreshtime in ms
+    private int setting_keep_screen_on=1; // keep screen on
 
     //debugging
     private static final String TAG = BigScreenActivity.class.getSimpleName();
@@ -152,10 +155,13 @@ public class BigScreenActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("RGS", "onCreateCalled");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_big_screen);
         //keep device on
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        if (setting_keep_screen_on==1) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
 
         //DEBUGGING SETUP
         if (DEBUG) {
@@ -234,7 +240,7 @@ public class BigScreenActivity extends ActionBarActivity {
                             StartRunningApp();
                             debugMessage("returned from StartRunningApp (234)");
                         }
-                    else
+                        else
                         {
                             //Alertbox start
                             AlertDialog.Builder alertDialogBuilderStart = new AlertDialog.Builder(
@@ -284,7 +290,7 @@ public class BigScreenActivity extends ActionBarActivity {
                                 .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         // if this button is clicked,
-                                        appStatus = 1; //set status to running
+                                        appStatus = 1; //set status again to running
                                         debugMessage("dialog cancel clicked for pause /cancel/ (287)");
                                         dialog.cancel();
                                     }
@@ -334,13 +340,17 @@ public class BigScreenActivity extends ActionBarActivity {
 
     @Override
     protected void onPause() {
+        Log.d("RGS", "onPause called");
         super.onPause();
+        Log.d("RGS", "calling stopDisplayRefreshTimer");
         stopDisplayRefreshTimer();
+        Log.d("RGS", "calling stopListening");
         stopListening();
     }
 
     @Override
     protected void onResume() {
+        Log.d("RGS", "onResume called");
         super.onResume();
         new appTask().execute();
         // ask for updates on the GPS status
@@ -357,7 +367,36 @@ public class BigScreenActivity extends ActionBarActivity {
         //startButton.setText("Pause");
     }
 
+    @Override
+    protected void onDestroy(){
+        Log.d("RGS", "OnDestroy called");
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("RGS", "OnStop called");
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
+            Log.d("RGS", "Now in landscape");
+        }
+        else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            Log.d("RGS", "Now in portrait");
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
     public void StartRunningApp(){
+        Log.d("RGS", "StartRunningApp called");
         debugMessage("entered StartRunning App 360");
         mInitializeDisplayItems(); //Reset the Text of dItems with initialString
         mResetValues(); //Reset all old values
@@ -381,8 +420,13 @@ public class BigScreenActivity extends ActionBarActivity {
     }
 
     public void stopApp()    {
+        Log.d("RGS", "StopApp called");
+        Log.d("RGS", "calling stopDisplayRefreshTimer");
         stopDisplayRefreshTimer();
-        if (setting_log==1) {stopLogTimer();}
+        if (setting_log==1) {
+            Log.d("RGS", "calling stopLogTimer");
+            stopLogTimer();}
+        Log.d("RGS", "calling stopListening");
         stopListening();
     }
 
@@ -551,9 +595,11 @@ public class BigScreenActivity extends ActionBarActivity {
         nowBearing=0;
         nowHeartRate=0;
         maxHeartRate=0;
+        minHeartRate=500;
         beginCalories = -1;
         nowCalories=0;
         avgHeartBeat=0;
+        lastLocationValid=false;
         dItemStartTime.setText(time_fm.format(startTime));
         gpsstatusTV.setText("start");
         refreshDisplay();
@@ -588,98 +634,85 @@ public class BigScreenActivity extends ActionBarActivity {
     private void updateLocation() {
         debugMessage("entered updateLocation (579)");
         long nowTime = System.currentTimeMillis();
-        if (appStatus == 0) {
-            avgHeartBeat = nowHeartRate;
-            dItemAvgHeartRate.setText(String.format("%.2f", avgHeartBeat));
-        }
-        if (appStatus == 1) { //update only if not paused
-            if (maxHeartRate < nowHeartRate) { //adjust max heart rate if needed
-                maxHeartRate = nowHeartRate;
-                dItemMaxHeartRate.setText(""+maxHeartRate);
-            }
-            if (avgHeartBeat < 40) { //check if avgHeartBeat was intialized
-                avgHeartBeat = nowHeartRate; //basically initialize avgHeartRate
-                dItemAvgHeartRate.setText(String.format("%.2f", avgHeartBeat));
-            } else {
-                if (durationMillis > 0 && nowHeartRate > 40) { //update avgHeartBeat
-                    avgHeartBeat = (avgHeartBeat * (durationMillis) + nowHeartRate * (nowTime - lastTime)) / (durationMillis + nowTime - lastTime);
-                    dItemAvgHeartRate.setText(String.format("%.2f", avgHeartBeat));
-                }
-            }
-            debugMessage("in updateLocation (605)");
-            durationMillis += (nowTime - lastTime);    //running in appStatus =1
-            if (nowLocation.hasAccuracy()) {
-                if (nowLocation.getAccuracy() < MIN_ACCURACY_FOR_DISTANCE && nowLocation.hasSpeed()) {
-                        if (nowLocation.getSpeed() == 0) { //adjust duration without speed
-                            debugMessage("in updateLocation (611)");
-                            durationNoSpeedMillis += (nowTime - lastTime);
-                        } else {
-                            debugMessage("in updateLocation (613)");
-                            if (!(lastLocation==null)) {
-                                if (lastLocation.getTime()>startTime) {
-                                    gpsTotalDistance += nowLocation.distanceTo(lastLocation); //adjust distance
+        if (lastLocationValid){
+            if (appStatus == 1) { //update only if not paused
+                debugMessage("in updateLocation (605)");
+                durationMillis += (nowTime - lastTime);    //running in appStatus =1
+                    if (nowLocation.getAccuracy() < MIN_ACCURACY_FOR_DISTANCE && nowLocation.hasSpeed()) {
+                            if (nowLocation.getSpeed() == 0) { //adjust duration without speed
+                                debugMessage("in updateLocation (611)");
+                                durationNoSpeedMillis += (nowTime - lastTime);
+                            } else {
+                                debugMessage("in updateLocation (613)");
+                                if (!(lastLocation==null)) {
+                                    if (lastLocation.getTime()>startTime) {
+                                        gpsTotalDistance += nowLocation.distanceTo(lastLocation); //adjust distance
+                                    }
+                                }
+                                if (maxSpeed < nowLocation.getSpeed() * 3.6) { //adjust maxspeed if needed
+                                    maxSpeed = nowLocation.getSpeed() * 3.6;
+                                    debugMessage("in updateLocation (618)");
+                                    dItemMaxSpeed.setText(String.format("%.2f", maxSpeed));
                                 }
                             }
-                            if (maxSpeed < nowLocation.getSpeed() * 3.6) { //adjust maxspeed if needed
-                                maxSpeed = nowLocation.getSpeed() * 3.6;
-                                debugMessage("in updateLocation (618)");
-                                dItemMaxSpeed.setText(String.format("%.2f", maxSpeed));
-                            }
-                        }
+                    }
+                debugMessage("in updateLocation (626)");
+                if (avgHeartBeat < 30) { //check if avgHeartBeat was intialized
+                    avgHeartBeat = nowHeartRate; //basically initialize avgHeartRate
+                    dItemAvgHeartRate.setText(String.format("%.2f", avgHeartBeat));
+                } else {
+                    if (durationMillis > 0 && nowHeartRate > 30) { //update avgHeartBeat
+                        avgHeartBeat = (avgHeartBeat * (durationMillis) + nowHeartRate * (nowTime - lastTime)) / (durationMillis + nowTime - lastTime);
+                        dItemAvgHeartRate.setText(String.format("%.2f", avgHeartBeat));
+                    }
                 }
-            }
-            debugMessage("in updateLocation (626)");
-            if (durationMillis > 0) {
-                avgSpeed = gpsTotalDistance / (durationMillis) * 3600.;//adjust average speed
-                dItemAvgSpeed.setText(String.format("%.2f", avgSpeed)); //write in ItemId
-            }
-               if (nowLocation.hasAccuracy()) {
-            lastLocation = nowLocation;
-            //Get GPS variables
-            nowLat = nowLocation.getLatitude(); //get Lat
-            dItemLatitude.setText("" + nowLat); // write in ItemId
-            nowLon = nowLocation.getLongitude(); // get Lon
-            dItemLongitude.setText("" + nowLon); // write in ItemId
-            nowAltitude = nowLocation.getAltitude(); // get alt
-            dItemAltitude.setText(String.format("%.2f", nowAltitude)); //write in ItemId
-            nowBearing = nowLocation.getBearing(); //get bearing
-            dItemBearing.setText("" + nowBearing);  // write in ItemId
-            if (nowLocation.hasSpeed()) {
-                nowSpeed = nowLocation.getSpeed() * 3.6; // get now Speed
-                dItemSpeed.setText(String.format("%.2f", nowSpeed)); // write in Itemid
-            } else {
-                dItemSpeed.setText("--");
-            }
-            //formatting of output
-            String preHours = "";
-            String preMinutes = "";
-            String preSeconds = "";
-            double timePassedInSec = (durationMillis) / 1000.;
-            int hoursRun = (int) (timePassedInSec / 3600);
-            int minutesRun = (int) (timePassedInSec / 60 - hoursRun * 60);
-            if (hoursRun < 10) {
-                preHours = "0";
-            }
-            if (minutesRun < 10) {
-                preMinutes = "0";
-            }
-            int secondsRun = (int) (timePassedInSec - hoursRun * 3600 - minutesRun * 60);
-            if (secondsRun < 10) {
-                    preSeconds = "0";
+                if (durationMillis > 0) {
+                    avgSpeed = gpsTotalDistance / (durationMillis) * 3600.;//adjust average speed
+                    dItemAvgSpeed.setText(String.format("%.2f", avgSpeed)); //write in ItemId
                 }
-                //Toast.makeText(getApplicationContext(), "Date= "+DateFormat.getDateInstance().format(nowTime), Toast.LENGTH_SHORT).show();
-                //Display gps variables when not in 0 app.status
-                if (!(appStatus == 0)) {
-                    dItemDistance.setText(String.format("%.2f", gpsTotalDistance / 1000));
-                    dItemDuration.setText(preHours + hoursRun + ":" + preMinutes + minutesRun + ":" + preSeconds + secondsRun);
+                //Get GPS variables
+                nowLat = nowLocation.getLatitude(); //get Lat
+                dItemLatitude.setText("" + nowLat); // write in ItemId
+                nowLon = nowLocation.getLongitude(); // get Lon
+                dItemLongitude.setText("" + nowLon); // write in ItemId
+                nowAltitude = nowLocation.getAltitude(); // get alt
+                dItemAltitude.setText(String.format("%.2f", nowAltitude)); //write in ItemId
+                nowBearing = nowLocation.getBearing(); //get bearing
+                dItemBearing.setText("" + nowBearing);  // write in ItemId
+                if (nowLocation.hasSpeed()) {
+                    nowSpeed = nowLocation.getSpeed() * 3.6; // get now Speed
+                    dItemSpeed.setText(String.format("%.2f", nowSpeed)); // write in Itemid
+                } else {
+                    dItemSpeed.setText("--");
                 }
-                if (appStatus == 1) {
-                    //writeLogSentence();
+                //formatting of output
+                String preHours = "";
+                String preMinutes = "";
+                String preSeconds = "";
+                double timePassedInSec = (durationMillis) / 1000.;
+                int hoursRun = (int) (timePassedInSec / 3600);
+                int minutesRun = (int) (timePassedInSec / 60 - hoursRun * 60);
+                if (hoursRun < 10) {
+                    preHours = "0";
                 }
+                if (minutesRun < 10) {
+                    preMinutes = "0";
+                }
+                int secondsRun = (int) (timePassedInSec - hoursRun * 3600 - minutesRun * 60);
+                if (secondsRun < 10) {
+                        preSeconds = "0";
+                    }
+                    //Toast.makeText(getApplicationContext(), "Date= "+DateFormat.getDateInstance().format(nowTime), Toast.LENGTH_SHORT).show();
+                    //Display gps variables when not in 0 app.status
+                    if (!(appStatus == 0)) {
+                        dItemDistance.setText(String.format("%.2f", gpsTotalDistance / 1000));
+                        dItemDuration.setText(preHours + hoursRun + ":" + preMinutes + minutesRun + ":" + preSeconds + secondsRun);
+                    }
             }
-            //refreshDisplay();
         }
         lastTime = nowTime;
+        lastLocation = nowLocation;
+        lastLocationValid=true; // after lastLocation is defined set lastLocationValid to true
         debugMessage("exit updateLocation (667)");
     }
 
@@ -785,8 +818,8 @@ public class BigScreenActivity extends ActionBarActivity {
                     }
                     // rolling average of accuracy so "Signal Quality" is not erratic
                     updateRollingAverage(nowLocation.getAccuracy());
+                    updateLocation();
                 }
-                updateLocation();
             }
         }
 
@@ -860,8 +893,6 @@ public class BigScreenActivity extends ActionBarActivity {
             }
         }
     }
-
-    ;
 
     //BAND STUFF
 
@@ -944,10 +975,22 @@ public class BigScreenActivity extends ActionBarActivity {
                 event.getHeartRate();
                 nowHeartRate = event.getHeartRate();
                 dItemHeartRate.setText("" + nowHeartRate);
-                //displayHR(nowHeartRate);
+                if (appStatus == 0) {
+                    avgHeartBeat = nowHeartRate;
+                    dItemAvgHeartRate.setText(String.format("%.2f", avgHeartBeat));
+                }
+                if (appStatus == 1) { //update only if not paused
+                if (maxHeartRate < nowHeartRate) { //adjust max heart rate if needed
+                    maxHeartRate = nowHeartRate;
+                    dItemMaxHeartRate.setText(""+maxHeartRate);
+                }
+                if (minHeartRate > nowHeartRate) { //adjust min heart rate if needed
+                    minHeartRate = nowHeartRate;
+                    dItemMinHeartRate.setText(""+minHeartRate);
+                }
+               }
             }
         }
-
     };
 
     private BandCaloriesEventListener mCaloriesEventListener = new BandCaloriesEventListener() {
@@ -980,13 +1023,11 @@ public class BigScreenActivity extends ActionBarActivity {
         return ConnectionState.CONNECTED == client.connect().await();
     }
 
-    ;
-
     private HeartRateConsentListener mHeartRateConsentListener = new HeartRateConsentListener() {
         @Override
         public void userAccepted(boolean b) {
             // handle user's heart rate consent decision
-            if (b == true) {
+            if (b) {
                 // Consent has been given, start HR sensor event listener
                 startHRListener();
             } else {
